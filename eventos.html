@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+	<!-- BOOTSTRAP -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Archivo js de configuración -->
+    <script type="text/javascript" src="config.js"></script>
+    <link rel="stylesheet" href="spinnerstyle.css">
+
+    <script type="text/javascript">
+        
+    if(sessionStorage.getItem('token') != null){
+			var token = sessionStorage.getItem('token');
+		}else{
+			window.location.href="index.html";
+		}
+
+    
+	$(document).ready(function(){ 
+     listarEventos();   
+    
+    
+    });  
+        
+        function listarEventos(){
+		$.ajax({
+			    url: URLDEV + "allevents",
+			    type: "GET",
+			    headers: { 'Authorization': token },
+			    dataType: 'json',
+			    success:function(response){
+
+                    console.log(response);
+                    
+                    $("#listaGroup").html("");
+                
+                    if($("#listaGroup").html() == ""){
+                    
+                        $.each(response.data.eventos, function(i, event) { 
+                        
+                            $("#listaGroup").append("<li id='" + event.id + "'class='list-group-item'>" + event.title + " " + "<input type='button' name='delet' id='delet' onclick='deletEvent(" + event.id + ")' class='btn btn-outline-danger' value='Delete'>" + "</li>");
+
+                            $(".sk-circle").hide();
+                            
+                        })
+                    }
+                }    
+            });
+        }
+
+
+    
+    function deletEvent(id){
+       
+        $.ajax({
+			    url: URLDEV + "deleteevent",
+			    type: "POST",
+                data: { 
+                    'id': id,
+			    },
+			    headers: { 'Authorization': token },
+			    dataType: 'json',
+			    success:function(response){    
+                 listarEventos();
+                }    
+        }); 
+    }
+
+    function GoUsers(){
+		window.location.href = "welcome.html";
+	}
+
+    function salir(){
+        sessionStorage.clear();
+        window.location.href = "index.html";
+    }
+    
+    </script>
+    <title>Eventos</title>
+</head>
+<body>
+    <div class="groups main container">
+
+        <div class="col-12 row mt-3">
+            <ol class="breadcrumb col-10">
+                <li class="breadcrumb-item"><a href="welcome.html">Usuarios</a></li>
+                <li class="breadcrumb-item"><a href="grupos.html">Grupos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Eventos</li>
+
+                
+            </ol>
+            <div class="col-2">
+                <button type="button" class="btn navbar-btn btn-outline-danger" onclick="salir()">Salir / Cerrar sesión</button>
+            </div>
+        </div>
+
+        <h1 class="col-12">Eventos</h1>
+
+        <br>
+
+        <h3 class="col-12">Listado de eventos</h3>
+
+        <ul class="list-group" id="listaGroup"></ul>
+
+        <div class="sk-circle">
+            <div class="sk-circle1 sk-child"></div>
+            <div class="sk-circle2 sk-child"></div>
+            <div class="sk-circle3 sk-child"></div>
+            <div class="sk-circle4 sk-child"></div>
+            <div class="sk-circle5 sk-child"></div>
+            <div class="sk-circle6 sk-child"></div>
+            <div class="sk-circle7 sk-child"></div>
+            <div class="sk-circle8 sk-child"></div>
+            <div class="sk-circle9 sk-child"></div>
+            <div class="sk-circle10 sk-child"></div>
+            <div class="sk-circle11 sk-child"></div>
+            <div class="sk-circle12 sk-child"></div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+    
+	</div>
+</body>
+</html>

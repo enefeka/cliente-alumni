@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MIEMBROS DEL GRUPO | Cliente Alumni CEV</title>
+
+	<meta charset="utf-8">
+
+	<!-- BOOTSTRAP -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+	<!-- Archivo js de configuración -->
+	<script type="text/javascript" src="config.js"></script>
+
+	<script>
+
+	if(sessionStorage.getItem('token') != null || sessionStorage.getItem('idUser') != null){
+		var token = sessionStorage.getItem('token');
+		var idUser = sessionStorage.getItem('idUser');
+	}else{
+		window.location.href="index.html";
+	}
+
+	var groups = "";
+	var userGroups = "";
+	window.onload = function()
+	{
+		getGroupsUser();
+	}
+	$.ajax({
+		    url: URLDEV + "listgroups",
+		    type: "GET",
+		    headers: { 'Authorization': token },
+		    dataType: 'json',
+		    success:function(response){
+		    	groups = response.data.groups;
+
+            }    
+        });
+
+	$("#result").hide();
+	 
+	idGroup = sessionStorage.getItem('id_group');
+	console.log(idGroup);
+	function getGroupsUser(){
+		$.ajax({
+		    url: URLDEV + "usersfromgroup",
+		    type: "GET",
+		    headers: { 'Authorization': token },
+		    data: {
+		    	'id_group': idGroup
+		    },
+		    dataType: 'json',
+		    success:function(response){
+		    	console.log(response.data);
+	
+		    	$("#tableBodyGroups").html("");
+
+		    	console.log(response.data[0]);
+
+		    		$.each(response.data, function(i, data) {
+			    		$("#tableBodyGroups").append("<tr><th class='text-center'>"+ data.name +"</th><td class='text-center'><button class='btn btn-outline-danger' onclick='exitGroup(" + data.id +")')>Eliminar del grupo</button></td></tr>");
+					});
+
+
+
+            },
+
+            error:function(response){
+            	console.log(response);
+            }   
+        });
+	}
+
+	function exitGroup(id_group){
+		$.ajax({
+		    url: URLDEV + "unassign",
+		    type: "POST",
+		    headers: { 'Authorization': token },
+		    data: {
+		    	'id_user': idUser,
+		    	'id_group': idGroup
+		    },
+		    dataType: 'json',
+		    success:function(response){
+
+		    	getGroupsUser();
+
+            }    
+        });
+
+	}
+
+
+	function backToUsers(){
+		window.location.href = "grupos.html";
+	}
+
+	</script>
+
+</head>
+<body>
+
+	<div class="container text-center">
+
+		<br>
+
+		<h1>Usuarios del grupo</h1>
+
+		<div class="container">
+
+			
+		</div>
+
+		<div class="m-3" style="float:left">
+			<button class="btn btn-outline-secondary" onclick="backToUsers()">Volver a grupos</button>
+		</div>
+
+		<hr>
+
+
+
+		<p id="resultError" class="alert alert-danger" style="display:none"></p>
+		<p id="resultSuccess" class="alert alert-success" style="display:none"></p>
+
+		<table class="table">
+			<thead class="thead-dark">
+			<tr>
+					<th class="text-center" scope="col"></th>
+					<th class="text-center" scope="col"></th>
+
+				</tr>
+			</thead>
+			<tbody id="tableBodyGroups">
+				
+			</tbody>
+		</table>
+
+
+        
+		
+
+	</div>
+
+</body>
+</html>
